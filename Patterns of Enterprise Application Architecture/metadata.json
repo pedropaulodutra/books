@@ -1,0 +1,33 @@
+{
+  "name": "Patterns of Enterprise Application Architecture",
+  "authors": [
+    {
+      "name": "Martin Fowler",
+      "biography": "https://pt.wikipedia.org/wiki/Martin_Fowler"
+    },
+    {
+      "name": "David Rice",
+      "biography": "..."
+    },
+    {
+      "name": "Matthew Foemmel",
+      "biography": "..."
+    },
+    {
+      "name": "Edward Hieatt",
+      "biography": "..."
+    },
+    {
+      "name": "Robert Mee",
+      "biography": "..."
+    },
+    {
+      "name": "Randy Stafford",
+      "biography": "..."
+    }
+  ],
+  "publisher": "Addison Wesley",
+  "publication_date": "2002-09-05",
+  "pages": 560,
+  "cover_url": "https://m.media-amazon.com/images/I/51oUM09Q5SL._SX342_SY445_QL70_ML2_.jpg"
+}

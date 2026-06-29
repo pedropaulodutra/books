@@ -1,0 +1,19 @@
+[project]
+name = "books"
+version = "0.1.0"
+description = "A repo destinated to writte books."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "taskipy>=1.14.1",
+    "typos>=1.47.2",
+]
+
+[tool.typos.files]
+extend-exclude = ["pt/"]
+
+[tool.taskipy.tasks]
+check = "typos ."
