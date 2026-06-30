@@ -13,7 +13,7 @@ dev = [
 ]
 
 [tool.typos.files]
-extend-exclude = ["pt/"]
+extend-exclude = ["pt/", "Python Fluente/"]
 
 [tool.taskipy.tasks]
 check = "typos ."

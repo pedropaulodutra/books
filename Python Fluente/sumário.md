@@ -1,0 +1,300 @@
+# 1. Prefácio
+- [1.1 - Para quem é esse livro](1.%20Prefácio/01.%20Para%20quem%20é%20esse%20livro.md)
+- [1.2 - Para quem esse livro não é](1.%20Prefácio/02.%20Para%20quem%20esse%20livro%20não%20é.md)
+- [1.3 - Como ler este livro](1.%20Prefácio/03.%20Como%20ler%20este%20livro.md)
+- [1.4 - Abordagem "mão na massa"](1.%20Prefácio/04.%20Abordagem%20"mão%20na%20massa".md)
+- [1.5 - Ponto de vista: minha perspectiva pessoal](1.%20Prefácio/05.%20Ponto%20de%20vista:%20minha%20perspectiva%20pessoal.md)
+- [1.6 - Conteúdo na Web](1.%20Prefácio/06.%20Conteúdo%20na%20Web.md)
+- [1.7 - Convenções usadas no livro](1.%20Prefácio/07.%20Convenções%20usadas%20no%20livro.md)
+- [1.8 - Usando os exemplos de código](1.%20Prefácio/08.%20Usando%20os%20exemplos%20de%20código.md)
+- [1.9 - O’Reilly Online Learning](1.%20Prefácio/09.%20O'Reilly%20Online%20Learning.md)
+- [1.10 - Como entrar em contato](1.%20Prefácio/10.%20Como%20entrar%20em%20contato.md)
+- [1.11 - Agradecimentos](1.%20Prefácio/11.%20Agradecimentos.md)
+- [1.12 - Sobre esta tradução](1.%20Prefácio/12.%20Sobre%20esta%20tradução.md)
+- [1.13 - Histórico das traduções](1.%20Prefácio/13.%20Histórico%20das%20traduções.md)
+
+# Volume I
+## 2. Parte I: Estruturas de dados
+  - [2.1 - O modelo de dados de Python](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md)
+      - [2.1.1 - Novidades neste capítulo](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#novidades-neste-capítulo)
+      - [2.1.2 - Um baralho pythônico](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#um-baralho-pythônico)
+      - [2.1.3 - Como os métodos especiais são utilizados](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#como-os-métodos-especiais-são-utilizados)
+      - 2.1.4 - Visão geral dos métodos especiais
+      - 2.1.5 - Por que len não é um método?
+      - 2.1.6 - Resumo do capítulo
+      - 2.1.7 - Para saber mais
+  - [2.2 - Uma coleção de sequências](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/02.%20Uma%20coleção%20de%20sequências.md)
+    - 2.2.1 - Novidades neste capítulo
+    - 2.2.2 - Uma visão geral das sequências embutidas
+    - 2.2.3 - Compreensões de listas e expressões geradoras
+    - 2.2.4 - Tuplas não são apenas listas imutáveis
+    - 2.2.5 - Desempacotando sequências e iteráveis
+    - 2.2.6 - Pattern matching com sequências
+    - 2.2.7 - Fatiamento
+    - 2.2.8 - Usando + e * com sequências
+    - 2.2.9 - list.sort versus a função embutida sorted
+    - 2.2.10 - Quando uma lista não é a resposta
+    - 2.2.11 - Resumo do capítulo
+    - 2.2.12 - Para saber mais
+  - 2.3 - Dicionários e conjuntos
+    - 2.3.1 - Novidades neste capítulo
+    - 2.3.2 - A sintaxe moderna dos dicts
+    - 2.3.3 - Pattern matching com mapeamentos
+    - 2.3.4 - A API padrão dos tipos de mapeamentos
+    - 2.3.5 - Tratamento automático de chaves ausentes
+    - 2.3.6 - Variações de dict
+    - 2.3.7 - Mapeamentos imutáveis
+    - 2.3.8 - Views de dicionários
+    - 2.3.9 - Consequências práticas da forma como dict funciona
+    - 2.3.10 - Teoria dos conjuntos
+    - 2.3.11 - Consequências práticas da forma de funcionamento dos conjuntos
+    - 2.3.12 - Operações de conjuntos em views de dict
+    - 2.3.13 - Resumo do capítulo
+    - 2.3.14 - Para saber mais
+  - 2.4 - Texto em Unicode versus Bytes
+    - 2.4.1 - Novidades neste capítulo
+    - 2.4.2 - Questões de caracteres
+    - 2.4.3 - Os fundamentos do byte
+    - 2.4.4 - Codificadores/Decodificadores básicos
+    - 2.4.5 - Entendendo os problemas de codificação/decodificação
+    - 2.4.6 - Processando arquivos de texto
+    - 2.4.7 - Normalizando o Unicode para comparações confiáveis
+    - 2.4.8 - Ordenando texto Unicode
+    - 2.4.9 - O banco de dados do Unicode
+    - 2.4.10 - APIs de modo dual para str e bytes
+    - 2.4.11 - Resumo do capítulo
+    - 2.4.12 - Para saber mais
+  - 2.5 - Fábricas de classes de dados
+    - 2.5.1 - Novidades neste capítulo
+    - 2.5.2 - Visão geral das fábricas de classes de dados
+    - 2.5.3 - Tuplas nomeadas clássicas
+    - 2.5.4 - Tuplas nomeadas com tipo
+    - 2.5.5 - Introdução às dicas de tipo
+    - 2.5.6 - Mais detalhes sobre @dataclass
+    - 2.5.7 - A classe de dados como cheiro no código
+    - 2.5.8 - Pattern matching com instâncias de classes
+    - 2.5.9 - Resumo do capítulo
+    - 2.5.10 - Para saber mais
+  - 2.6 - Referências, mutabilidade, e memória
+    - 2.6.1 - Novidades neste capítulo
+    - 2.6.2 - Variáveis não são caixas
+    - 2.6.3 - Identidade, igualdade e apelidos
+    - 2.6.4 - A princípio, cópias são rasas
+    - 2.6.5 - Parâmetros de função como referências
+    - 2.6.6 - del e coleta de lixo
+    - 2.6.7 - Peças que Python prega com imutáveis
+    - 2.6.8 - Resumo do capítulo
+    - 2.6.9 - Para saber mais
+
+## 3. Parte II: Funções como objetos
+  - 3.1 - Funções como objetos de primeira classe
+    - 3.1.1 - Novidades neste capítulo
+    - 3.1.2 - Tratando uma função como um objeto
+    - 3.1.3 - Funções de ordem superior
+    - 3.1.4 - Funções anônimas
+    - 3.1.5 - Os nove sabores de objetos invocáveis
+    - 3.1.6 - Tipos invocáveis definidos pelo usuário
+    - 3.1.7 - De parâmetros posicionais a parâmetros somente nomeados
+    - 3.1.8 - Pacotes para programação funcional
+    - 3.1.9 - Resumo do capítulo
+    - 3.1.10 - Para saber mais
+  - 3.2 - Dicas de tipo em funções
+    - 3.2.1 - Novidades neste capítulo
+    - 3.2.2 - Sobre tipagem gradual
+    - 3.2.3 - Tipagem gradual na prática
+    - 3.2.4 - Tipos são definidos pelas operações possíveis
+    - 3.2.5 - Tipos próprios para anotações
+    - 3.2.6 - Anotando parâmetros apenas posicionais e variádicos
+    - 3.2.7 - Tipos imperfeitos e testes poderosos
+    - 3.2.8 - Resumo do capítulo
+    - 3.2.9 - Para saber mais
+  - 3.3 - Decoradores e Clausuras
+    - 3.3.1 - Novidades neste capítulo
+    - 3.3.2 - Introdução aos decoradores
+    - 3.3.3 - Quando Python executa decoradores
+    - 3.3.4 - Decoradores de registro
+    - 3.3.5 - Regras de escopo de variáveis
+    - 3.3.6 - Clausuras
+    - 3.3.7 - A declaração nonlocal
+    - 3.3.8 - Implementando um decorador simples
+    - 3.3.9 - Decoradores na biblioteca padrão
+    - 3.3.10 - Decoradores parametrizados
+    - 3.3.11 - Resumo do capítulo
+    - 3.3.12 - Para saber mais
+  - 3.4 - Padrões de projetos com funções de primeira classe
+    - 3.4.1 - Novidades neste capítulo
+    - 3.4.2 - Estudo de caso: refatorando Estratégia
+    - 3.4.3 - Estratégia com decorador de registro
+    - 3.4.4 - O padrão Comando
+    - 3.4.5 - Resumo do capítulo
+    - 3.4.6 - Para saber mais
+
+# Volume II
+## 4. Parte III: Classes e Protocolos
+  - 4.1 - Um objeto pythônico
+    - 4.1.1 - Novidades neste capítulo
+    - 4.1.2 - Representações de objetos
+    - 4.1.3 - A volta da classe Vector
+    - 4.1.4 - Um construtor alternativo
+    - 4.1.5 - classmethod versus staticmethod
+    - 4.1.6 - Exibição formatada
+    - 4.1.7 - Um Vector2d hashable
+    - 4.1.8 - Suportando o casamento de padrões posicionais
+    - 4.1.9 - Listagem completa Vector2d, versão 3
+    - 4.1.10 - Atributos privados e "protegidos" no Python
+    - 4.1.11 - Economizando memória com `__slots__`
+    - 4.1.12 - Sobrescrevendo atributos de classe
+    - 4.1.13 - Resumo do capítulo
+    - 4.1.14 - Para saber mais
+  - 4.2 - Métodos especiais para sequências
+    - 4.2.1 - Novidades neste capítulo
+    - 4.2.2 - Vector: tipo sequência definido pelo usuário
+    - 4.2.3 - Vector versão #1: compatível com Vector2d
+    - 4.2.4 - Protocolos e a tipagem pato
+    - 4.2.5 - Vector versão #2: sequência fatiável
+    - 4.2.6 - Vector versão #3: atributos dinâmicos
+    - 4.2.7 - Vector versão #4: o hash e um == mais rápido
+    - 4.2.8 - Vector versão #5: Formatando
+    - 4.2.9 - Resumo do capítulo
+    - 4.2.10 - Para saber mais
+  - 4.3 - [Interfaces, protocolos, e ABCs](3.%20Volume%202/1.%20Parte%20III:%20Classes%20e%20Protocolos/03.%20Interfaces,%20protocolos,%20e%20ABCs.md)
+    - 4.3.1 - O mapa de tipagem
+    - 4.3.2 - Novidades neste capítulo
+    - 4.3.3 - Dois tipos de protocolos
+    - 4.3.4 - Programando patos
+    - 4.3.5 - Tipagem ganso
+    - 4.3.6 - Protocolos estáticos
+    - 4.3.7 - Resumo do capítulo
+    - 4.3.8 - Para saber mais
+  - 4.4 - Herança: para o bem ou para o mal
+    - 4.4.1 - Novidades neste capítulo
+    - 4.4.2 - A função super()
+    - 4.4.3 - Problemas com subclasses de tipos embutidos
+    - 4.4.4 - Herança múltipla e a Ordem de Resolução de Métodos
+    - 4.4.5 - Classes mixin
+    - 4.4.6 - Herança múltipla no mundo real
+    - 4.4.7 - Lidando com a herança
+    - 4.4.8 - Resumo do capítulo
+    - 4.4.9 - Para saber mais
+  - 4.5 - Mais dicas de tipo
+    - 4.5.1 - Novidades neste capítulo
+    - 4.5.2 - Assinaturas sobrecarregadas
+    - 4.5.3 - TypedDict
+    - 4.5.4 - Coerção de tipo (type casting)
+    - 4.5.5 - Lendo dicas de tipo durante a execução
+    - 4.5.6 - Implementando uma classe genérica
+    - 4.5.7 - Variância
+    - 4.5.8 - Implementando um protocolo estático genérico
+    - 4.5.9 - Resumo do capítulo
+    - 4.5.10 - Para saber mais
+  - [4.6 - Sobrecarga de operadores](3.%20Volume%202/1.%20Parte%20III:%20Classes%20e%20Protocolos/06.%20Sobrecarga%20de%20operadores.md)
+    - 4.6.1 - Novidades neste capítulo
+    - 4.6.2 - Introdução à sobrecarga de operadores
+    - 4.6.3 - Operadores unários
+    - 4.6.4 - Sobrecarregando + para adição de Vector
+    - 4.6.5 - Sobrecarregando * para multiplicação por escalar
+    - 4.6.6 - Usando @ como operador infixo
+    - 4.6.7 - Resumindo os operadores aritméticos
+    - 4.6.8 - Operadores de comparação rica
+    - 4.6.9 - Operadores de atribuição aumentada
+    - 4.6.10 - Resumo do capítulo
+    - 4.6.11 - Para saber mais
+
+# Volume III
+## 5. Parte IV: Controle de fluxo
+  - 5.1 - Iteradores, geradores e corrotinas clássicas
+    - 5.1.1 - Novidades neste capítulo
+    - 5.1.2 - Uma sequência de palavras
+    - 5.1.3 - Porque sequências são iteráveis: a função iter
+    - 5.1.4 - Iteráveis versus iteradores
+    - 5.1.5 - Classes Sentence com `__iter__`
+    - 5.1.6 - Sentenças preguiçosas
+    - 5.1.7 - Quando usar expressões geradoras
+    - 5.1.8 - Um gerador de progressão aritmética
+    - 5.1.9 - Funções geradoras na biblioteca padrão
+    - 5.1.10 - Funções de redução de iteráveis
+    - 5.1.11 - Subgeradores com yield from
+    - 5.1.12 - Tipos iteráveis genéricos
+    - 5.1.13 - Corrotinas clássicas
+    - 5.1.14 - Resumo do capítulo
+    - 5.1.15 - Para saber mais
+  - 5.2 - Instruções with, match, e blocos else
+    - 5.2.1 - Novidades neste capítulo
+    - 5.2.2 - Instrução with e gerenciadores de contexto
+    - 5.2.3 - Pattern matching no lis.py: um estudo de caso
+    - 5.2.4 - Faça isso, então aquilo: blocos else além do if
+    - 5.2.5 - Resumo do capítulo
+    - 5.2.6 - Para saber mais
+  - 5.3 - Modelos de concorrência em Python
+    - 5.3.1 - Novidades neste capítulo
+    - 5.3.2 - A visão geral
+    - 5.3.3 - Um pouco de jargão
+    - 5.3.4 - Um "Olá mundo" concorrente
+    - 5.3.5 - O verdadeiro impacto da GIL
+    - 5.3.6 - Um pool de processos caseiro
+    - 5.3.7 - Python no mundo multi-núcleo.
+    - 5.3.8 - Resumo do capítulo
+    - 5.3.9 - Para saber mais
+  - 5.4 - Executores concorrentes
+    - 5.4.1 - Novidades neste capítulo
+    - 5.4.2 - Downloads concorrentes da Web
+    - 5.4.3 - Processos com concurrent.futures
+    - 5.4.4 - Experimento com Executor.map
+    - 5.4.5 - Barra de progresso e tratamento de erros
+    - 5.4.6 - Resumo do capítulo
+    - 5.4.7 - Para saber mais
+  - 5.5 - Programação assíncrona
+    - 5.5.1 - Novidades neste capítulo
+    - 5.5.2 - Algumas definições.
+    - 5.5.3 - Sondando domínios com asyncio
+    - 5.5.4 - Novo conceito: esperável (awaitable)
+    - 5.5.5 - Downloads com asyncio e HTTPX
+    - 5.5.6 - Gerenciadores de contexto assíncronos
+    - 5.5.7 - Melhorando o download de bandeiras assíncrono
+    - 5.5.8 - Delegando tarefas a executores
+    - 5.5.9 - Programando servidores assíncronos
+    - 5.5.10 - Iteráveis assíncronos
+    - 5.5.11 - Sondando domínios com Curio
+    - 5.5.12 - Dicas de tipo para objetos assíncronos
+    - 5.5.13 - Como a programação assíncrona funciona e como não funciona
+    - 5.5.14 - Resumo do capítulo
+    - 5.5.15 - Para saber mais
+
+## 6. Parte V: Metaprogramação
+  - 6.1 - Atributos dinâmicos e propriedades
+    - 6.1.1 - Novidades neste capítulo
+    - 6.1.2 - Explorando dados com atributos dinâmicos
+    - 6.1.3 - Propriedades computadas
+    - 6.1.4 - Propriedades para validação de atributos
+    - 6.1.5 - Propriedades em profundidade
+    - 6.1.6 - Uma fábrica de propriedades
+    - 6.1.7 - Tratando a exclusão de atributos
+    - 6.1.8 - Atributos e funções essenciais para tratamento de atributos
+    - 6.1.9 - Resumo do capítulo
+    - 6.1.10 - Leitura Complementar
+  - 6.2 - Descritores de Atributos
+    - 6.2.1 - Novidades neste capítulo
+    - 6.2.2 - Descritor para validação de atributos
+    - 6.2.3 - Descritores dominantes ou não dominantes
+    - 6.2.4 - Métodos são descritores
+    - 6.2.5 - Dicas para usar descritores
+    - 6.2.6 - Docstrings e exclusão de descritores
+    - 6.2.7 - Resumo do capítulo
+    - 6.2.8 - Para saber mais
+  - 6.3 - Metaprogramação de classes
+    - 6.3.1 - Novidades neste capítulo
+    - 6.3.2 - Classes como objetos
+    - 6.3.3 - type: a fábrica de classes embutida
+    - 6.3.4 - Uma função fábrica de classes
+    - 6.3.5 - Apresentando `__init_subclass__`
+    - 6.3.6 - Um decorador de classes
+    - 6.3.7 - O que acontece quando: importação versus execução
+    - 6.3.8 - Introdução às metaclasses
+    - 6.3.9 - Checked, agora com metaclasse
+    - 6.3.10 - Metaclasses no mundo real
+    - 6.3.11 - Um hack de metaclasse com `__prepare__`
+    - 6.3.12 - Para encerrar
+    - 6.3.13 - Resumo do capítulo
+    - 6.3.14 - Para saber mais
+
+# 7. Postfácio
