@@ -3,3 +3,5 @@
 3. NT: Nesta edição em português também usamos _itálico_ em alguns termos mantidos em inglês ou traduções de termos cuja versão em português não é familiar.
 4. Traduzido de [Story of Jython](http://hugunin.net/story_of_jython.html) (EN), prefácio de [Jython Essentials](https://www.oreilly.com/library/view/jython-essentials/9781449397364/) (EN), de Samuele Pedroni e Noel Rappin (O’Reilly).
 5. Uma struct do C é um tipo de registro com campos nomeados.
+6. NT: invocável é um objeto que contém código que pode ser executado com a sintaxe `o()`. Isso inclui funções, métodos, classes e outros objetos, como veremos em detalhes no [Capítulo 7](../2.%20Volume%201/2.%20Parte%20II:%20Funções%20como%20objetos/01.%20Funções%20como%20objetos%20de%20primeira%20classe.md). A documentação do Python usa o termo "chamável". Adotamos "invocável" para evitar confusão entre dois sentidos do verbo "chamar": executar (uma função) ou nomear (a função chama-se…​).
+7. Agradeço à leitora Tina Lapine por apontar essa informação.

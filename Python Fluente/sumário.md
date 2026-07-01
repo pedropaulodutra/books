@@ -19,14 +19,14 @@
       - [2.1.1 - Novidades neste capítulo](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#novidades-neste-capítulo)
       - [2.1.2 - Um baralho pythônico](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#um-baralho-pythônico)
       - [2.1.3 - Como os métodos especiais são utilizados](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#como-os-métodos-especiais-são-utilizados)
-      - 2.1.4 - Visão geral dos métodos especiais
-      - 2.1.5 - Por que len não é um método?
-      - 2.1.6 - Resumo do capítulo
-      - 2.1.7 - Para saber mais
+      - [2.1.4 - Visão geral dos métodos especiais](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#visão-geral-dos-métodos-especiais)
+      - [2.1.5 - Por que len não é um método?](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#por-que-len-não-é-um-método)
+      - [2.1.6 - Resumo do capítulo](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#resumo-do-capítulo)
+      - [2.1.7 - Para saber mais](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/01.%20O%20modelo%20de%20dados%20em%20Python.md#para-saber-mais)
   - [2.2 - Uma coleção de sequências](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/02.%20Uma%20coleção%20de%20sequências.md)
-    - 2.2.1 - Novidades neste capítulo
-    - 2.2.2 - Uma visão geral das sequências embutidas
-    - 2.2.3 - Compreensões de listas e expressões geradoras
+    - [2.2.1 - Novidades neste capítulo](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/02.%20Uma%20coleção%20de%20sequências.md#novidades-neste-capítulo)
+    - [2.2.2 - Uma visão geral das sequências embutidas](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/02.%20Uma%20coleção%20de%20sequências.md#uma-visão-geral-das-sequências-embutidas)
+    - [2.2.3 - Compreensões de listas e expressões geradoras](2.%20Volume%201/1.%20Parte%20I:%20Estruturas%20de%20dados/02.%20Uma%20coleção%20de%20sequências.md#compreensões-de-listas-e-expressões-geradoras)
     - 2.2.4 - Tuplas não são apenas listas imutáveis
     - 2.2.5 - Desempacotando sequências e iteráveis
     - 2.2.6 - Pattern matching com sequências
