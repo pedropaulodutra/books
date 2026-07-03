@@ -1,0 +1,29 @@
+project:
+  type: book
+
+book:
+  title: "Python Fluente - Volume 1"
+  output-file: "python-fluente-volume-1"
+  author:
+    - name: "Luciano Ramalho"
+      url: "https://ramalho.org/"
+  date: "2023-01-01"
+  chapters:
+    - index.md
+    - "../1-prefacio/prefacio.md"
+
+    - part: "Parte I: Estruturas de dados"
+      chapters:
+        - "1-parte-i-estruturas-de-dados/01-o-modelo-de-dados-em-python.md"
+        - "1-parte-i-estruturas-de-dados/02-uma-colecao-de-sequencias.md"
+
+lang: pt-BR
+
+format:
+  epub:
+    cover-image: cover.jpg
+    toc: true
+    toc-depth: 2
+
+metadata:
+  publisher: "Z•Edições"

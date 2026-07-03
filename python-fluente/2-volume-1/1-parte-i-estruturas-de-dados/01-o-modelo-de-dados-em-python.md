@@ -1,0 +1,487 @@
+# O modelo de dados de Python
+
+> "O senso estético de Guido para o design de linguagens é incrível. Conheci muitos projetistas capazes de criar linguagens teoricamente lindas, que ninguém jamais usaria. Mas Guido é uma daquelas raras pessoas capazes de criar uma linguagem só um pouco menos teoricamente linda que, por isso mesmo, é uma delícia para programar. [[4](../../5-postfacio/footnote.md#L4)]"
+> — Jim Hugunin (criador do Jython, co-criador do AspectJ, e arquiteto do .Net DLR—Dynamic Language Runtime)
+
+Uma das melhores qualidades de Python é sua consistência. Após trabalhar com Python por algum tempo, é possível intuir, de modo informado e correto, o funcionamento de recursos que você acabou de conhecer.
+
+Entretanto, se você aprendeu outra linguagem orientada a objetos antes de Python, pode achar estranho usar `len(collection)` em vez de `collection.len()`. Essa pecularidade é a ponta de um iceberg que, quando bem compreendido, é a chave para tudo aquilo que chamamos de _pythônico_. O iceberg se chama o Modelo de Dados de Python, e é a API que usamos para fazer nossos objetos lidarem bem com os recursos mais poderosos e característicos da linguagem.
+
+É possível pensar no modelo de dados como uma descrição de Python na forma de um framework. Ele formaliza as interfaces dos elementos constituintes da própria linguagem, como sequências, funções, iteradores, corrotinas, classes, gerenciadores de contexto e assim por diante.
+
+Quando usamos um framework, passamos um bom tempo programando métodos que são chamados pelo framework, e não pelas nossas classes. O mesmo acontece quando nos valemos do Modelo de Dados de Python para criar novas classes. O interpretador de Python invoca métodos especiais para realizar operações básicas sobre os objetos, muitas vezes acionadas por uma sintaxe especial. Os nomes dos métodos especiais são sempre precedidos e seguidos de dois sublinhados. Por exemplo, a sintaxe `obj[key]` está amparada no método especial `__getitem__`. Para resolver `my_collection[key]`, o interpretador chama `my_collection.__getitem__(key)`.
+
+Implementamos métodos especiais quando queremos que nossos objetos suportem e interajam com elementos fundamentais da linguagem, como:
+
+- Coleções
+- Acesso a atributos
+- Iteração (incluindo iteração assíncrona com `async for`)
+- Sobrecarga (_overloading_) de operadores
+- Invocação de funções e métodos
+- Representação e formatação de strings
+- Programação assíncrona usando `await`
+- Criação e destruição de objetos
+- Contextos gerenciados usando as instruções `with` ou `async with`
+
+> ℹ️ **Mágica e o "dunder"**
+> O termo _método mágico_ é uma gíria usada para se referir aos métodos especiais, mas como falamos de um método específico, por exemplo `__getitem__`? Aprendi a dizer "dunder-getitem" com o autor e professor Steve Holden. "Dunder" é uma contração da frase em inglês "double underscore before and after" (_sublinhado duplo antes e depois_). Por isso os métodos especiais são também conhecidos como _métodos dunder_. O capítulo "[Análise Léxica](https://docs.python.org/pt-br/3/reference/lexical_analysis.html#)" de _A Referência da Linguagem Python_ adverte: "_Qualquer_ uso de nomes no formato `__*__` que não siga explicitamente o uso documentado, em qualquer contexto, está sujeito a quebra sem aviso prévio."
+
+## Novidades neste capítulo
+
+Esse capítulo sofreu poucas alterações desde a primeira edição, pois é uma introdução ao Modelo de Dados de Python, que é muito estável. As mudanças mais significativas foram:
+
+- Métodos especiais que suportam programação assíncrona e outras novas funcionalidades foram acrescentados às tabelas na [Seção 1.4](#visão-geral-dos-métodos-especiais).
+
+- A @fig-uml-diagram, mostrando o uso de métodos especiais na [Seção 1.3.4](#a-api-de-collection), incluindo a classe base abstrata `collections.abc.Collection`, introduzida no Python 3.6.
+
+Além disso, aqui e por toda essa segunda edição, adotei a sintaxe _f-string_, introduzida no Python 3.6, que é mais legível e muitas vezes mais conveniente que as notações de formatação de strings mais antigas: o método `str.format()` e o operador `%`.
+
+> 💡 Existe ainda uma razão para usar `my_fmt.format():` quando a definição de `my_fmt` precisa vir de um lugar diferente daquele onde a operação de formatação precisa acontecer no código. Por exemplo, quando `my_fmt` tem múltiplas linhas e é melhor definida em uma constante, ou quando tem de vir de um arquivo de configuração ou de um banco de dados. Essas são necessidades reais, mas não acontecem com frequência.
+
+## Um baralho pythônico
+
+O @exm-french-deck é simples, mas demonstra as possibilidades que se abrem com a implementação de apenas dois métodos especiais, `__getitem__` e `__len__`.
+
+::: {#exm-french-deck}
+**Um baralho como uma sequência de cartas**
+
+```python
+import collections
+
+Card = collections.namedtuple('Card', ['rank', 'suit'])
+
+class FrenchDeck:
+    ranks = [str(n) for n in range(2, 11)] + list('JQKA')
+    suits = 'spades diamonds clubs hearts'.split()
+
+    def __init__(self):
+        self._cards = [Card(rank, suit) for suit in self.suits
+                                        for rank in self.ranks]
+
+    def __len__(self):
+        return len(self._cards)
+
+    def __getitem__(self, position):
+        return self._cards[position]
+```
+:::
+
+A primeira coisa a notar é o uso de `collections.namedtuple` para construir uma classe simples representando cartas individuais. Usamos `namedtuple` para criar classes de objetos que são apenas um agrupamento de atributos, sem métodos próprios, como um registro de banco de dados. Neste exemplo, a utilizamos para fornecer uma boa representação textual para as cartas em um baralho, como mostra a sessão no console:
+
+```python
+>>> beer_card = Card('7', 'diamonds')
+>>> beer_card
+Card(rank='7', suit='diamonds')
+```
+
+Mas a parte central desse exemplo é a classe `FrenchDeck`. Ela é curta, mas poderosa. Primeiro, como qualquer coleção padrão de Python, uma instância de `FrenchDeck` responde à função `len()`, devolvendo o número de cartas naquele baralho:
+
+```python
+>>> deck = FrenchDeck()
+>>> len(deck)
+52
+```
+
+Ler cartas específicas do baralho é fácil, graças ao método `__getitem__`. Por exemplo, a primeira e a última carta:
+
+```python
+>>> deck[0]
+Card(rank='2', suit='spades')
+>>> deck[-1]
+Card(rank='A', suit='hearts')
+```
+
+Deveríamos criar um método para obter uma carta aleatória? Não é necessário. Python já tem uma função que devolve um item aleatório de uma sequência: `random.choice`. Podemos usá-la em uma instância de `FrenchDeck`:
+
+```python
+>>> from random import choice
+>>> choice(deck)
+Card(rank='3', suit='hearts')
+>>> choice(deck)
+Card(rank='K', suit='spades')
+>>> choice(deck)
+Card(rank='2', suit='clubs')
+```
+
+Acabamos de ver duas vantagens de usar os métodos especiais no contexto do Modelo de Dados de Python.
+
+- Os usuários de suas classes não precisam memorizar nomes arbitrários de métodos para operações comuns ("Como obter o número de itens? É` .size()`, `.length()` ou outra coisa?")
+
+- É mais fácil de aproveitar a rica biblioteca padrão de Python e evitar reinventar a roda, como no caso da função `random.choice`.
+
+Mas não é só isso.
+
+Como nosso `__getitem__` usa o operador `[]` de `self._cards`, nosso baralho suporta fatiamento automaticamente. Podemos olhar as três primeiras cartas no topo de um baralho, e depois pegar só os ases, iniciando com o índice 12 e pulando 13 cartas por vez:
+
+```python
+>>> deck[:3]
+[Card(rank='2', suit='spades'), Card(rank='3', suit='spades'),
+Card(rank='4', suit='spades')]
+>>> deck[12::13]
+[Card(rank='A', suit='spades'), Card(rank='A', suit='diamonds'),
+Card(rank='A', suit='clubs'), Card(rank='A', suit='hearts')]
+```
+
+E como já temos o método especial `__getitem__`, nosso baralho é um objeto iterável, ou seja, pode ser percorrido em um laço `for`:
+
+```python
+>>> for card in deck:  # doctest: +ELLIPSIS
+...   print(card)
+Card(rank='2', suit='spades')
+Card(rank='3', suit='spades')
+Card(rank='4', suit='spades')
+...
+```
+
+Também podemos iterar sobre o baralho na ordem inversa:
+
+```python
+>>> for card in reversed(deck):  # doctest: +ELLIPSIS
+...   print(card)
+Card(rank='A', suit='hearts')
+Card(rank='K', suit='hearts')
+Card(rank='Q', suit='hearts')
+...
+```
+
+> ℹ️ **Reticências nos doctests**
+> Sempre que possível, extraí as listagens do console de Python usadas neste livro com o [doctest](https://docs.python.org/pt-br/3/library/doctest.html), para garantir a precisão. Quando a saída era longa demais, a parte omitida está marcada por reticências (`...`), como na última linha do trecho de código anterior.
+> Nesse casos, usei a diretiva `# doctest: +ELLIPSIS` para fazer o doctest funcionar. Ao experimentar esses exemplos no console iterativo, pode omitir todos os comentários de doctest.
+
+A iteração muitas vezes é implícita. Python invoca o método `__contains__` da coleção para tratar o operador `in`: `student in team`. Mas se a coleção não fornece um método `__contains__`, o operador `in` realiza uma busca sequencial. No nosso caso, `in` funciona com nossa classe `FrenchDeck` porque ela é iterável. Veja a seguir:
+
+```python
+>>> Card('Q', 'hearts') in deck
+True
+>>> Card('7', 'beasts') in deck
+False
+```
+
+E o ordenamento? Um sistema comum de ordenar cartas é por seu valor numérico (ases sendo os mais altos) e depois por naipe, na ordem espadas (o mais alto), copas, ouros e paus (o mais baixo). Aqui está uma função que ordena as cartas com essa regra, devolvendo `0` para o 2 de paus e `51` para o Ás de espadas.
+
+```python
+suit_values = dict(spades=3, hearts=2, diamonds=1, clubs=0)
+
+def spades_high(card):
+    rank_value = FrenchDeck.ranks.index(card.rank)
+    return rank_value * len(suit_values) + suit_values[card.suit]
+```
+
+Podemos agora ordenar nosso baralho usando `spades_high` como critério de ordenação:
+
+```python
+>>> for card in sorted(deck, key=spades_high):  # doctest: +ELLIPSIS
+...      print(card)
+Card(rank='2', suit='clubs')
+Card(rank='2', suit='diamonds')
+Card(rank='2', suit='hearts')
+... (46 cards omitted)
+Card(rank='A', suit='diamonds')
+Card(rank='A', suit='hearts')
+Card(rank='A', suit='spades')
+```
+
+Apesar da `FrenchDeck` herdar implicitamente da classe `object`, a maior parte de sua funcionalidade não é herdada, vem do modelo de dados e de composição. Ao implementar os métodos especiais `__len__` e `__getitem__`, nosso `FrenchDeck` se comporta como uma sequência Python padrão, podendo assim se beneficiar de recursos centrais da linguagem (por exemplo, iteração e fatiamento), e da biblioteca padrão, como mostramos nos exemplos usando `random.choice`, `reversed`, e `sorted`. Graças à composição, as implementações de `__len__` e `__getitem__` podem delegar todo o trabalho para um objeto `list`, especificamente `self._cards`.
+
+> ℹ️ **Como embaralhar as cartas?**
+> Como foi implementado até aqui, um `FrenchDeck` não pode ser embaralhado, porque as cartas e suas posições não podem ser alteradas, exceto violando o encapsulamento e manipulando o atributo `_cards` diretamente. No [Capítulo 13](../../3-volume-2/1-parte-iii-classes-e-protocolos/13-interfaces-protocolos-e-abcs.md) vamos corrigir isso acrescentando um método `__setitem__` de uma linha. Você consegue imaginar como ele seria implementado?
+
+## Como os métodos especiais são utilizados
+
+A primeira coisa a saber sobre os métodos especiais é que eles são feitos para serem chamados pelo interpretador Python, e não por você. Você não escreve `my_object.__len__()`. Escreve `len(my_object)` e, se `my_object` é uma instância de uma classe definida por você, então Python chama o método `__len__` que você implementou.
+
+Mas o interpretador pega um atalho quando está lidando com um tipo embutido como `list`, `str`, `bytearray`, ou extensões compiladas como os arrays da NumPy. As coleções de tamanho variável de Python escritas em C incluem uma struct[[5](../../5-postfacio/footnote.md#L5)] chamada `PyVarObject`, com um campo `ob_size` que registra a quantidade de itens na coleção. Então, se `my_object` é uma instância de algum daqueles tipos embutidos, `len(my_object)` devolve diretamente valor do campo `ob_size`, e isso é mais rápido que chamar um método.
+
+Na maior parte das vezes, a chamada a um método especial é implícita. Por exemplo, o comando `for i in x:` na verdade gera uma invocação de `iter(x)`, que por sua vez pode chamar `x.__iter__()` se esse método estiver disponível, ou usar `x.__getitem__()`, como no exemplo do `FrenchDeck`.
+
+Em condições normais, seu código não deveria conter muitas chamadas diretas a métodos especiais. A menos que você esteja fazendo muita metaprogramação, implementar métodos especiais deve ser mais frequente que invocá-los explicitamente. O único método especial que é chamado frequentemente pelo seu código é `__init__`, para invocar a inicialização da superclasse na implementação do seu próprio `__init__`.
+
+Geralmente, se você precisa invocar um método especial, é melhor chamar a função embutida relacionada (por exemplo, `len`, `iter`, `str`, etc.). Essas funções chamam o método especial correspondente, mas também fornecem outros serviços e para tipos embutidos são mais rápidas que chamadas a métodos.
+
+Na próxima seção veremos alguns dos usos mais importantes dos métodos especiais:
+
+- Emular tipos numéricos
+- Representar objetos na forma de strings
+- Determinar o valor booleano de um objeto
+- Implementar coleções
+
+### Emulando tipos numéricos
+
+Vários métodos especiais permitem que objetos criados pelo usuário respondam a operadores como `+`. Vamos tratar disso com mais detalhes no [Capítulo 16](../../3-volume-2/1-parte-iii-classes-e-protocolos/16-sobrecarga-de-operadores.md). Aqui nosso objetivo é continuar ilustrando o uso dos métodos especiais, através de outro exemplo simples.
+
+Vamos implementar uma classe para representar vetores bi-dimensionais, isto é, vetores euclidianos como aqueles usados em matemática e física (veja a @fig-vector-sum).
+
+> 💡 O tipo embutido `complex` pode ser usado para representar vetores bi-dimensionais, mas nossa classe pode ser estendida para representar vetores N-dimensionais. Faremos isso no [Capítulo 17](../../4-volume-3/parte-iv-controle-de-fluxo/17-iteradores-geradores-e-corrotinas-classicas.md).
+
+::: {#fig-vector-sum}
+
+**Figura 1. Soma de vetores bi-dimensionais; `Vector(2, 4) + Vector(2, 1) devolve Vector(4, 5)`.**
+
+![](../../images/figure-1.png)
+:::
+
+Vamos começar a projetar a API para essa classe escrevendo uma sessão de console simulada, que depois podemos usar como um doctest. O trecho a seguir testa a adição de vetores ilustrada na @fig-vector-sum:
+
+```python
+>>> v1 = Vector(2, 4)
+>>> v2 = Vector(2, 1)
+>>> v1 + v2
+Vector(4, 5)
+```
+
+Observe como o operador `+` produz um novo objeto `Vector(4, 5)`.
+
+A função embutida `abs` devolve o valor absoluto de números inteiros e de ponto flutuante, e a magnitude de números `complex`. Então, por consistência, nossa API também usa `abs` para calcular a magnitude de um vetor:
+
+```python
+>>> v = Vector(3, 4)
+>>> abs(v)
+5.0
+```
+
+Podemos também implementar o operador `*`, para realizar multiplicação por escalar (isto é, multiplicar um vetor por um número para obter um novo vetor de mesma direção e magnitude multiplicada):
+
+```python
+>>> v * 3
+Vector(9, 12)
+>>> abs(v * 3)
+15.0
+```
+
+O @exm-vector é uma classe `Vector` que implementa as operações descritas acima, usando os métodos especiais `__repr__`, `__abs__`, `__add__`, e `__mul__`.
+
+::: {#exm-vector}
+**Uma classe simples para representar um vetor 2D.**
+
+```python
+"""
+vector2d.py: a simplistic class demonstrating some special methods
+
+It is simplistic for didactic reasons. It lacks proper error handling,
+especially in the ``__add__`` and ``__mul__`` methods.
+
+This example is greatly expanded later in the book.
+
+Addition::
+
+    >>> v1 = Vector(2, 4)
+    >>> v2 = Vector(2, 1)
+    >>> v1 + v2
+    Vector(4, 5)
+
+Absolute value::
+
+    >>> v = Vector(3, 4)
+    >>> abs(v)
+    5.0
+
+Scalar multiplication::
+
+    >>> v * 3
+    Vector(9, 12)
+    >>> abs(v * 3)
+    15.0
+
+"""
+
+
+import math
+
+class Vector:
+
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        return f'Vector({self.x!r}, {self.y!r})'
+
+    def __abs__(self):
+        return math.hypot(self.x, self.y)
+
+    def __bool__(self):
+        return bool(abs(self))
+
+    def __add__(self, other):
+        x = self.x + other.x
+        y = self.y + other.y
+        return Vector(x, y)
+
+    def __mul__(self, scalar):
+        return Vector(self.x * scalar, self.y * scalar)
+```
+:::
+
+Implementamos cinco métodos especiais, além do costumeiro `__init__`. Veja que nenhum deles é chamado diretamente dentro da classe ou durante seu uso normal, ilustrado pelos doctests. Como mencionado antes, o interpretador Python é o único usuário frequente da maioria dos métodos especiais.
+
+O @exm-vector implementa dois operadores: `+` e `*`, para demonstrar o uso básico de `__add__` e `__mul__`. No dois casos, os métodos criam e devolvem uma nova instância de `Vector`, e não modificam nenhum dos operandos: `self` e `other` são apenas lidos. Esse é o comportamento esperado de operadores infixos: criar novos objetos e não tocar em seus operandos. Vou falar mais sobre esse tópico no [Capítulo 16](../../3-volume-2/1-parte-iii-classes-e-protocolos/16-sobrecarga-de-operadores.md).
+
+> ⚠️ Da forma como está implementado, o @exm-vector permite multiplicar um `Vector` por um número, mas não um número por um `Vector`, violando a propriedade comutativa da multiplicação por escalar. Vamos consertar isso com o método especial `__rmul__` no [Capítulo 16](../../3-volume-2/1-parte-iii-classes-e-protocolos/16-sobrecarga-de-operadores.md).
+
+Nas seções seguintes vamos discutir os outros métodos especiais em `Vector`.
+
+### Representação como string
+
+O método especial `__repr__` é chamado pela função embutida `repr` para obter a representação do objeto como uma string, para depuração. Sem um `__repr__` customizado, o console de Python mostraria uma instância de `Vector` como `<Vector object at 0x10e100070>`.
+
+O console iterativo e o depurador chamam `repr` para exibir o resultado das expressões. O `repr` também é usado:
+
+- Pelo marcador posicional `%r` na formatação clássica com o operador `%`. Ex.: `'%r' % my_obj`
+
+- Pelo sinalizador de conversão `!r` na nova [sintaxe de strings de formato](https://docs.python.org/pt-br/3.10/library/string.html#format-string-syntax) usada nas _f-strings_ e no método `str.format`. Ex: `f'{my_obj!r}'`
+
+Note que a _f-string_ no nosso `__repr__` usa `!r` para obter a representação padrão dos atributos a serem exibidos. Isso é uma boa prática, pois durante uma seção de depuração podemos ver a diferença entre `Vector(1, 2)` e `Vector('1', '2')`. Este segundo objeto não funcionaria no contexto desse exemplo, porque o construtor espera que os argumentos sejam números, não `str`.
+
+A string devolvida por `__repr__` não deve ser ambígua e, se possível, deve corresponder ao código-fonte necessário para recriar o objeto representado. É por isso que nossa representação de `Vector` se parece com uma chamada ao construtor da classe, por exemplo `Vector(3, 4)`.
+
+Por outro lado, `__str__` é chamado pela função embutida `str()` e usado automaticamente pela função `print`. Ele deve devolver uma string apropriada para ser exibida aos usuários finais da aplicação.
+
+Algumas vezes a própria string devolvida por `__repr__` é adequada para exibir ao usuário, e você não precisa programar `__str__`, porque a implementação de `__str__` herdada da classe object já invoca `__repr__`. O [Exemplo 2]() é um dos muitos exemplos neste livro com um `__str__` customizado.
+
+> 💡 Programadores com experiência anterior em linguagens que contém o método `toString` tendem a implementar `__str__` e não `__repr__`. Se você for implementar apenas um desses métodos especiais, escolha `__repr__`.
+> ["What is the difference between `__str__` and `__repr__` in Python?" (Qual a diferença entre `__str__` e `__repr__` em Python?)](https://stackoverflow.com/questions/1436703/what-is-the-difference-between-str-and-repr) (EN) é uma questão no Stack Overflow com excelentes contribuições dos pythonistas Alex Martelli e Martijn Pieters.
+
+### O valor booleano de um tipo customizado
+
+Apesar de Python ter um tipo `bool`, a linguagem aceita qualquer objeto em um contexto booleano, tal como as expressões controlando instruções `if` ou `while`, ou como operandos de `and`, `or` e `not`. Para determinar se um valor `x` é verdadeiro ou falso, Python invoca `bool(x)`, que devolve somente `True` ou `False`.
+
+Por padrão, instâncias de classes definidas pelo usuário são consideradas verdadeiras, a menos que `__bool__` ou `__len__` sejam implementadas. Basicamente, `bool(x)` chama `x.__bool__()` e usa o resultado. Se `__bool__` não está implementado, Python tenta invocar `x.__len__()`, e se esse último devolver zero, `bool` devolve `False`. Caso contrário, `bool` devolve `True`.
+
+Nossa implementação de `__bool__` é simples: ela devolve `False` se a magnitude do vetor for zero, caso contrário devolve `True`. Convertemos a magnitude para um valor booleano usando `bool(abs(self))`, porque espera-se que `__bool__` devolva um booleano. Fora dos métodos `__bool__`, raramente é necessário chamar `bool()` explicitamente, porque qualquer objeto pode ser usado em um contexto booleano.
+
+Observe que o método especial `__bool__` permite que seus objetos sigam as regras de teste do valor verdade definidas no [capítulo "Tipos Embutidos"](https://docs.python.org/pt-br/3/library/stdtypes.html) da documentação da _Biblioteca Padrão de Python_.
+
+> ℹ️ Essa é uma implementação mais rápida de `Vector.__bool__`:
+> ```python
+> def __bool__(self):
+>        return bool(self.x or self.y)
+> ```
+> Isso é mais difícil de ler, mas evita a jornada através de `abs`, `__abs__`, os quadrados, e a raiz quadrada. A conversão explícita para `bool` é necessária porque `__bool__` deve devolver um booleano, e `or` devolve um dos seus operandos no formato original: `x or y` resulta em `x` se x for verdadeiro, caso contrário resulta em `y`, qualquer que seja o valor deste último.
+
+### A API de Collection
+
+A @fig-uml-diagram documenta as interfaces dos tipos de coleções essenciais na linguagem. Todas as classes no diagrama são ABCs, _classes base abstratas_ (_ABC_ é sigla para _Abstract Base Class_). As ABCs e o módulo `collections.abc` são tratados no [Capítulo 13](../../3-volume-2/1-parte-iii-classes-e-protocolos/13-interfaces-protocolos-e-abcs.md). O objetivo dessa pequena seção é dar uma visão panorâmica das interfaces das coleções mais importantes de Python, mostrando como elas são criadas a partir de métodos especiais.
+
+::: {#fig-uml-diagram}
+
+**Figura 2. Diagrama de classes UML com os tipos fundamentais de coleções. Métodos com nome em itálico são abstratos, então precisam ser implementados pelas subclasses concretas, como `list` e `dict`. O restante dos métodos têm implementações concretas, então as subclasses podem herdá-los.**
+
+![Figura 2](../../images/figure-2.png)
+
+:::
+
+Cada uma das ABCs no topo da hierarquia tem um único método especial. A ABC `Collection` (introduzida no Python 3.6) unifica as três interfaces essenciais que toda coleção deveria implementar:
+
+- `Iterable`, para suportar `for`, [desempacotamento](https://docs.python.org/pt-br/3/tutorial/controlflow.html#unpacking-argument-lists), e outras formas de iteração
+- `Sized` para suportar a função embutida `len`
+- `Container` para suportar o operador `in`
+
+Na verdade, Python não exige que classes concretas herdem de qualquer dessas ABCs. Qualquer classe que implemente `__len__` satisfaz a interface `Sized`.
+
+Três especializações muito importantes de `Collection` são:
+
+- `Sequence`, formalizando a interface de tipos embutidos como `list` e `str`
+- `Mapping`, implementado por `dict`, `collections.defaultdict`, etc.
+- `Set`, a interface dos tipos embutidos `set` e `frozenset`
+
+Apenas `Sequence` é `Reversible`, porque sequências suportam o ordenamento arbitrário de seu conteúdo, ao contrário de mapeamentos(_mappings_) e conjuntos(_sets_).
+
+> ℹ️ Desde Python 3.7, o tipo `dict` é oficialmente "ordenado", mas isso só quer dizer que a ordem de inserção das chaves é preservada. Você não pode rearranjar as chaves em um `dict` da forma que quiser.
+
+Todos os métodos especiais na ABC `Set` implementam operadores infixos. Por exemplo, `a & b` calcula a interseção entre os conjuntos `a` e `b`, e é implementada no método especial `__and__`.
+
+Os próximos dois capítulos vão tratar em detalhes das sequências, mapeamentos e conjuntos da biblioteca padrão.
+
+Agora vamos considerar as duas principais categorias dos métodos especiais definidos no Modelo de Dados de Python.
+
+## Visão geral dos métodos especiais
+
+O [capítulo "Modelo de Dados"](https://docs.python.org/pt-br/3/reference/datamodel.html) de _A Referência da Linguagem Python_ lista mais de 80 nomes de métodos especiais. Mais da metade deles implementa operadores aritméticos, de comparação, ou bit a bit. Para ter uma visão geral do que está disponível, veja tabelas a seguir.
+
+A @tbl-special-methods mostra nomes de métodos especiais, excluindo aqueles usados para implementar operadores infixos ou funções matemáticas fundamentais como `abs`. A maioria desses métodos será tratado ao longo do livro, incluindo as adições mais recentes: métodos especiais assíncronos como `__anext__` (acrescentado no Python 3.5), e o método de configuração de classes, `__init_subclass__` (do Python 3.6).
+
+| Categoria                                                                    | Nomes dos métodos                                                       |
+| :--------------------------------------------------------------------------: | :---------------------------------------------------------------------: |
+| Representação de string/bytes                                                | `__repr__` `__str__` `__format__` `__bytes__` `__fspath__`              |
+| Conversão para número                                                        | `__bool__` `__complex__` `__int__` `__float__` `__hash__` `__index__`   |
+| Emulação de coleções                                                         | `__len__` `__getitem__` `__setitem_`_ `__delitem__` `__contains__`      |
+| Iteração                                                                     | `__iter__` `__aiter__` `__next__` `__anext__` `__reversed__`            |
+| Execução de invocável[[6](../../5-postfacio/footnote.md#L6)] ou corrotina | `__call__` `__await__`                                                  |
+| Gerenciamento de contexto                                                    | `__enter__` `__exit__` `__aexit__` `__aenter__`                         |
+| Criação e destruição de instâncias                                           | `__new__` `__init__` `__del__`                                          |
+| Gerenciamento de atributos                                                   | `__getattr__` `__getattribute__` `__setattr__` `__delattr__` `__dir__`  |
+| Descritores de atributos                                                     | `__get__` `__set__` `__delete__` `__set_name__`                         |
+| Classes base abstratas                                                       | `__instancecheck__` `__subclasscheck__`                                 |
+| Metaprogramação de classes                                                   | `__prepare__` `__init_subclass__` `__class_getitem__` `__mro_entries__` |
+
+: Nomes de métodos especiais (excluindo operadores) {#tbl-special-methods}
+
+Operadores infixos e numéricos são suportados pelos métodos especiais listados na @tbl-math-special-method. Aqui os nomes mais recentes são `__matmul__`, `__rmatmul__`, e `__imatmul__`, adicionados no Python 3.5 para suportar o uso de `@` como operador de multiplicação de matrizes, como veremos no [Capítulo 16](../../3-volume-2/1-parte-iii-classes-e-protocolos/16-sobrecarga-de-operadores.md).
+
+
+| Categoria do operador | Símbolos                                                       | Nomes de métodos                                      |
+| :-------------------: | :------------------------------------------------------------: | :---------------------------------------------------: |
+| Unário numérico       | `-` `+` `abs()`                                                  | `__neg__` `__pos__` `__abs__`                       |
+| Comparação rica       | `<` `<=` `==` `!=` `>` `>=`                                    | `__lt__` `__le__` `__eq__` `__ne__` `__gt__` `__ge__` |
+| Aritmético            | `+` `-` `*` `/` `//` `%` `@` `divmod()` `round()` `**` `pow()` | `__add__` `__sub__` `__mul__` `__truediv__` `__floordiv__` `__mod__` `__matmul__` `__divmod__` `__round__` `__pow__` |
+| Aritmética reversa    | (idem, com operandos trocados)                                 | `__radd__` `__rsub__` `__rmul__` `__rtruediv__` `__rfloordiv__` `__rmod__` `__rmatmul__` `__rdivmod__` `__rpow__` |
+| Atribuição aumentada  | `+=` `-=` `*=` `/=` `//=` `%=` `@=` `**=`                      | `__iadd__` `__isub__` `__imul__` `__itruediv__` `__ifloordiv__` `__imod__` `__imatmul__` `__ipow__` |
+| Bit a bit             | `&` `\|` `^` `<<` `>>` `~`                                     | `__and__` `__or__` `__xor__` `__lshift__` `__rshift__` `__invert__` |
+| Bit a bit reversa     | (idem, com operandos trocados)                                 | `__rand__` `__ror__` `__rxor__` `__rlshift__` `__rrshift__` |
+| Atribuição bit a bit  | `&=` `\|=` `^=` `<<=` `>>=`                                    | `__iand__` `__ior__` `__ixor__` `__ilshift__` `__irshift__` |
+
+: Tabela 2. Nomes e símbolos de métodos especiais para operadores {#tbl-math-special-method}
+
+> ℹ️ Python invoca um método especial de operador reverso no segundo argumento quando o método especial correspondente não pode ser usado no primeiro operando. Atribuições aumentadas são atalho combinando um operador infixo com uma atribuição de variável, por exemplo `a += b`.
+> O [Capítulo 16](../../3-volume-2/1-parte-iii-classes-e-protocolos/16-sobrecarga-de-operadores.md) explica em detalhes os operadores reversos e a atribuição aumentada.
+
+## Por que len não é um método?
+
+Em 2013, fiz essa pergunta a Raymond Hettinger, um dos mantenedores do Python, e sua resposta foi basicamente uma citação do ["The Zen of Python" (O Zen do Python)](https://www.python.org/doc/humor/#the-zen-of-python) (EN): "a praticidade vence a pureza." Na [Seção 1.3](#como-os-métodos-especiais-são-utilizados), descrevi como `len(x)` roda muito rápido quando `x` é uma instância de um tipo embutido. Nenhum método é chamado para os objetos embutidos do CPython: o tamanho é simplesmente lido de um campo em uma struct C. Obter o número de itens em uma coleção é uma operação comum, e precisa funcionar de forma eficiente para tipos tão básicos e diferentes como `str`, `list`, `memoryview`, e assim por diante.
+
+Em outras palavras, `len` não é chamado como um método porque recebe um tratamento especial como parte do Modelo de Dados de Python, da mesma forma que `abs`. Mas graças ao método especial `__len__`, também é possível fazer `len` funcionar com nossas classes. Isso é um compromisso justo entre a necessidade de objetos embutidos eficientes e a consistência da linguagem. Também de "O Zen de Python": "Casos especiais não são especiais o bastante para quebrar as regras."
+
+> ℹ️ Pensar em `abs` e `len` como operadores unários nos deixa mais inclinados a perdoar seus aspectos funcionais, contrários à sintaxe de chamada de método que esperaríamos em uma linguagem orientada a objetos. De fato, Python herdou muito de sua sintaxe e estruturas de dados da linguagem ABC, onde existe o operador `#`, que equivale ao `len`: em ABC, `len(s)` escreve-se `#s`. Quando usado como operador infixo, `x#s` conta as ocorrências de `x` em `s`, que em Python obtemos com `s.count(x)`, para qualquer sequência `s`.
+
+## Resumo do capítulo
+
+Ao implementar métodos especiais, as classes que você cria podem se comportar como os tipos embutidos, permitindo o estilo de programação expressivo que a comunidade considera _pythônico_.
+
+Uma exigência básica para um objeto em Python é fornecer strings representando a si mesmo que possam ser usadas, uma para depuração e registro (_log_), outra para apresentar aos usuários finais. É para isso que os métodos especiais `__repr__` e `__str__` existem no modelo de dados.
+
+Emular sequências, como mostrado com o exemplo do `FrenchDeck`, é um dos usos mais comuns dos métodos especiais. Por exemplo, bibliotecas de banco de dados frequentemente devolvem resultados de consultas na forma de coleções similares a sequências. Tirar o máximo proveito dos tipos de sequências existentes é o assunto do [Capítulo 2](02-uma-colecao-de-sequencias.md). Como implementar suas próprias sequências será visto no [Capítulo 12](../../3-volume-2/1-parte-iii-classes-e-protocolos/12-metodos-especiais-para-sequencias.md), onde criaremos uma extensão multidimensional da classe `Vector`.
+
+Graças à sobrecarga de operadores, Python oferece uma rica seleção de tipos numéricos, desde os tipos embutidos até `decimal.Decimal` e `fractions.Fraction`, todos eles suportando operadores aritméticos infixos. As bibliotecas de ciência de dados _NumPy_ suportam operadores infixos com matrizes e tensores. A implementação de operadores, incluindo operadores reversos e atribuição aumentada, será vista no [Capítulo 16](../../3-volume-2/1-parte-iii-classes-e-protocolos/16-sobrecarga-de-operadores.md), usando melhorias do exemplo `Vector`.
+
+Também veremos o uso e a implementação da maioria dos outros métodos especiais do Modelo de Dados de Python ao longo deste livro.
+
+## Para saber mais
+
+O [capítulo "Modelo de Dados"](https://docs.python.org/pt-br/3/reference/datamodel.html) em _A Referência da Linguagem Python_ é a fonte canônica para o assunto desse capítulo e de uma boa parte deste livro.
+
+[Python in a Nutshell, 3rd ed.](https://www.oreilly.com/library/view/python-in-a/9781491913833/) (EN), de Alex Martelli, Anna Ravenscroft, e Steve Holden (O’Reilly) tem uma excelente cobertura do modelo de dados. Sua descrição da mecânica de acesso a atributos é a mais competente que já vi, perdendo apenas para o próprio código-fonte em C do CPython. Martelli também é um contribuidor prolífico do Stack Overflow, com mais de 6200 respostas publicadas. Veja seu perfil de usuário no [Stack Overflow](https://stackoverflow.com/users/95810/alex-martelli).
+
+David Beazley tem dois livros tratando do modelo de dados em detalhes, no contexto de Python 3: [Python Essential Reference](https://dabeaz.com/per.html) (EN), 4th ed. (Addison-Wesley), e [Python Cookbook, 3rd ed](https://www.oreilly.com/library/view/python-cookbook-3rd/9781449357337/) (EN) (O’Reilly), colaborando com Brian K. Jones.
+
+[The Art of the Metaobject Protocol](https://mitpress.mit.edu/9780262111584/the-art-of-the-metaobject-protocol/) (EN) (MIT Press) de Gregor Kiczales, Jim des Rivieres, e Daniel G. Bobrow explica o conceito de um protocolo de metaobjetos, do qual o Modelo de Dados de Python é um exemplo.
+
+> ##### Ponto de Vista
+>
+> **Modelo de dados ou modelo de objetos?**
+> Aquilo que a documentação de Python chama de "Modelo de Dados de Python", a maioria dos autores diria que é o "Modelo de objetos de Python"
+>
+>O _Python in a Nutshell_, 3rd ed. de Martelli, Ravenscroft, e Holden, e o _Python Essential Reference_, 4th ed., de David Beazley são os melhores livros sobre o Modelo de Dados de Python, mas se referem a ele como o "modelo de objetos." Na Wikipedia, a primeira definição de ["modelo de objetos"](https://en.wikipedia.org/wiki/Object_model) (EN) é: "as propriedades dos objetos em geral em uma linguagem de programação de computadores específica." É disso que o Modelo de Dados de Python trata. Neste livro, usarei "modelo de dados" porque esse é o título do [capítulo de _A Referência da Linguagem Python_](https://docs.python.org/pt-br/3/reference/datamodel.html) mais relevante para nossas discussões.
+>
+> **Métodos de "trouxas"**
+> [_The Original Hacker’s Dictionary (Dicionário Hacker Original)_](https://www.dourish.com/goodies/jargon.html) (EN) define mágica como "algo ainda não explicado ou muito complicado para explicar" ou "uma funcionalidade, em geral não divulgada, que permite fazer algo que de outra forma seria impossível."
+>
+> Ruby tem o equivalente aos métodos especiais, chamados de _métodos mágicos_ naquela comunidade. Alguns na comunidade Python também adotam esse termo. Acredito que os métodos especiais são o contrário de mágica. Python e Ruby oferecem a seus usuários um rico protocolo de metaobjetos integralmente documentado, permitindo que "trouxas" como você e eu possam emular muitas das funcionalidades disponíveis para os mantenedores que escrevem os interpretadores daquelas linguagens.
+>
+> Por outro lado, pense em Go. Alguns objetos naquela linguagem tem funcionalidades que são mágicas, no sentido de não poderem ser emuladas em nossos próprios objetos definidos pelo usuário. Por exemplo, os arrays, strings e mapas de Go suportam o uso de colchetes para acesso a um item, na forma `a[i]`. Mas não há como fazer a notação `[]` funcionar com um novo tipo de coleção definida por você.
+>
+> Talvez, no futuro, os projetistas de Go melhorem seu protocolo de metaobjetos. Em 2021, ele ainda é mais limitado do que Python, Ruby, e JavaScript oferecem.
+>
+> **Metaobjetos**
+> _The Art of the Metaobject Protocol (AMOP) (A Arte do protocolo de metaobjetos)_ é meu título favorito entre livros de computação. Mas o menciono aqui porque o termo _protocolo de metaobjetos_ é útil para pensar sobre o Modelo de Dados de Python, e sobre recursos similares em outras linguagens. A parte _metaobjetos_ se refere aos objetos que são os componentes essenciais da própria linguagem. Nesse contexto, _protocolo_ é sinônimo de _interface_. Assim, um _protocolo de metaobjetos_ é um sinônimo chique para modelo de objetos: uma API para os elementos fundamentais da linguagem.
+>
+> Um protocolo de metaobjetos rico permite estender a linguagem para suportar novos paradigmas de programação. Gregor Kiczales, o primeiro autor do _AMOP_, mais tarde se tornou um pioneiro da programação orientada a aspecto, e o autor inicial do AspectJ, uma extensão de Java implementando aquele paradigma. A programação orientada a aspecto é mais fácil de implementar em uma linguagem dinâmica como Python, e alguns frameworks fazem exatamente isso. Um exemplo importante é a [_zope.interface_](https://zopeinterface.readthedocs.io/en/latest/) (EN), parte do framework Zope sobre o qual o sistema de gerenciamento de conteúdo [Plone](https://plone.org.br/) é construído.

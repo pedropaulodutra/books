@@ -13,7 +13,8 @@ dev = [
 ]
 
 [tool.typos.files]
-extend-exclude = ["pt/", "Python Fluente/"]
+extend-exclude = ["pt/", "python-fluente/"]
 
 [tool.taskipy.tasks]
 check = "typos ."
+book-1 = "quarto render 'python-fluente/2-volume-1' --to epub"
