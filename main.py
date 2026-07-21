@@ -1,5 +1,4 @@
-colors = ["black", "white"]
-sizes = ["S", "M", "L"]
+testing = ["a", "b", "c"]
 
-for tshirts in ((color, size) for color in colors for size in sizes):
-    print(tshirts)
+for letter in testing:
+    print(letter)
